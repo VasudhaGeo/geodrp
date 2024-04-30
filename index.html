@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with ERDDAP WMS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            width: 100%;
+            height: 90%; /* Reduced height to accommodate the control panel */
+        }
+        .control-panel {
+            width: 100%;
+            height: 10%; /* Height of the control panel */
+            background-color: #004c99; /* A nice shade of dark blue */
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0; /* Padding for better spacing */
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        input[type="date"],
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #f5f5f5; /* Light gray background for the button */
+            border: none;
+            border-radius: 5px;
+            color: #333;
+        }
+        button:hover {
+            background-color: #e1e1e1; /* Slightly darker on hover */
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="control-panel">
+        <input type="date" id="datePicker">
+        <button onclick="updateMap()">Update Map</button>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map', {
+            center: [0.0, 0.0],
+            crs: L.CRS.EPSG4326,
+            zoom: 1
+        });
+
+
+      var basemaps = {
+        CRW_BAA: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          attribution: 'NOAA Coral Reef Watch (CRW)',
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'NOAA_DHW:CRW_BAA',
+          styles: '',
+          time: '2024-04-20T12:00:00Z',
+          transparent: true,
+          version: '1.3.0'}),
+     
+        CRW_BAA_7D_MAX: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          attribution: 'NOAA Coral Reef Watch (CRW)',
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'NOAA_DHW:CRW_BAA_7D_MAX',
+          styles: '',
+          time: '2024-04-20T12:00:00Z',
+          transparent: true,
+          version: '1.3.0'}),
+      
+        CRW_DHW: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          attribution: 'NOAA Coral Reef Watch (CRW)',
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'NOAA_DHW:CRW_DHW',
+          styles: '',
+          time: '2024-04-20T12:00:00Z',
+          transparent: true,
+          version: '1.3.0'}),
+ 
+        CRW_HOTSPOT: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          attribution: 'NOAA Coral Reef Watch (CRW)',
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'NOAA_DHW:CRW_HOTSPOT',
+          styles: '',
+          time: '2024-04-20T12:00:00Z',
+          transparent: true,
+          version: '1.3.0'}),
+      
+        CRW_SST: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          attribution: 'NOAA Coral Reef Watch (CRW)',
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'NOAA_DHW:CRW_SST',
+          styles: '',
+          time: '2024-04-20T12:00:00Z',
+          transparent: true,
+          version: '1.3.0'}),
+        CRW_SSTANOMALY: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          attribution: 'NOAA Coral Reef Watch (CRW)',
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'NOAA_DHW:CRW_SSTANOMALY',
+          styles: '',
+          time: '2024-04-20T12:00:00Z',
+          transparent: true,
+          version: '1.3.0'}),
+       
+      }
+
+      var overlays = {
+        Land: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'Land',
+          styles: '',
+          transparent: true,
+          version: '1.3.0'}),
+        Coastlines: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'Coastlines',
+          styles: '',
+          transparent: true,
+          version: '1.3.0'}),
+        LakesAndRivers: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'LakesAndRivers',
+          styles: '',
+          transparent: true,
+          version: '1.3.0'}),
+        Nations: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'Nations',
+          styles: '',
+          transparent: true,
+          version: '1.3.0'}),
+        States: L.tileLayer.wms(
+          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+          bgcolor: '0x808080',
+          crs: L.CRS.EPSG4326,
+          format: 'image/png',
+          layers: 'States',
+          styles: '',
+          transparent: true,
+          version: '1.3.0'})
+      };
+
+
+
+        L.control.layers(basemaps, overlays, {}).addTo(map);
+
+        // Default layers added
+        basemaps.CRW_BAA.addTo(map);
+        overlays.Coastlines.addTo(map);
+        overlays.LakesAndRivers.addTo(map);
+        overlays.Nations.addTo(map);
+
+        function updateMap() {
+            var selectedDate = document.getElementById('datePicker').value;
+            // Update each layer's time parameter
+            for (var key in basemaps) {
+                basemaps[key].setParams({ time: selectedDate + 'T12:00:00Z' });
+            }
+            for (var key in overlays) {
+                overlays[key].setParams({ time: selectedDate + 'T12:00:00Z' });
+            }
+        }
+    </script>
+</body>
+</html>
