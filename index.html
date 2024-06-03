@@ -15,6 +15,21 @@
             width: 100%;
             height: 90%; /* Reduced height to accommodate the control panel */
         }
+      
+          .top-bar {
+            width: 100%;
+            height: 10%; /* Height of the top bar */
+            background-color: #2E8B57; /* A nice shade of dark green */
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0; /* Padding for better spacing */
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
         .control-panel {
             width: 100%;
             height: 10%; /* Height of the control panel */
@@ -46,6 +61,9 @@
     </style>
 </head>
 <body>
+  <div class="top-bar">
+        Real-Time & Historic Coral Bleaching Alert : NOAA
+    </div>
     <div id="map"></div>
     <div class="control-panel">
         <input type="date" id="datePicker">
