@@ -6,7 +6,6 @@
     <title>Leaflet Map with ERDDAP WMS</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-
         body, html {
             height: 100%;
             margin: 0;
@@ -19,7 +18,7 @@
         .control-panel {
             width: 100%;
             height: 10%; /* Height of the control panel */
-            background-color: 	#2E8B57; /* A nice shade of dark blue */
+            background-color: #2E8B57; /* A nice shade of dark blue */
             color: #ffffff;
             text-align: center;
             padding: 10px 0; /* Padding for better spacing */
@@ -57,133 +56,91 @@
         var map = L.map('map', {
             center: [0.0, 0.0],
             crs: L.CRS.EPSG4326,
-            zoom: 1
+            zoom: 2
         });
 
+        // Add Esri World Imagery basemap directly to the map
+        var esriWorldImagery = L.tileLayer('https://wi.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
 
-      var basemaps = {
-        CRW_BAA: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          attribution: 'NOAA Coral Reef Watch (CRW)',
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'NOAA_DHW:CRW_BAA',
-          styles: '',
-          time: '2024-04-20T12:00:00Z',
-          transparent: true,
-          version: '1.3.0'}),
-     
-        CRW_BAA_7D_MAX: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          attribution: 'NOAA Coral Reef Watch (CRW)',
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'NOAA_DHW:CRW_BAA_7D_MAX',
-          styles: '',
-          time: '2024-04-20T12:00:00Z',
-          transparent: true,
-          version: '1.3.0'}),
-      
-        CRW_DHW: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          attribution: 'NOAA Coral Reef Watch (CRW)',
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'NOAA_DHW:CRW_DHW',
-          styles: '',
-          time: '2024-04-20T12:00:00Z',
-          transparent: true,
-          version: '1.3.0'}),
- 
-        CRW_HOTSPOT: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          attribution: 'NOAA Coral Reef Watch (CRW)',
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'NOAA_DHW:CRW_HOTSPOT',
-          styles: '',
-          time: '2024-04-20T12:00:00Z',
-          transparent: true,
-          version: '1.3.0'}),
-      
-        CRW_SST: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          attribution: 'NOAA Coral Reef Watch (CRW)',
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'NOAA_DHW:CRW_SST',
-          styles: '',
-          time: '2024-04-20T12:00:00Z',
-          transparent: true,
-          version: '1.3.0'}),
-        CRW_SSTANOMALY: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          attribution: 'NOAA Coral Reef Watch (CRW)',
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'NOAA_DHW:CRW_SSTANOMALY',
-          styles: '',
-          time: '2024-04-20T12:00:00Z',
-          transparent: true,
-          version: '1.3.0'}),
-       
-      }
+        var basemaps = {
+            "CRW_BAA": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              attribution: 'NOAA Coral Reef Watch (CRW)',
+              format: 'image/png',
+              layers: 'NOAA_DHW:CRW_BAA',
+              transparent: true,
+              version: '1.3.0'}),
+            "CRW_BAA_7D_MAX": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              attribution: 'NOAA Coral Reef Watch (CRW)',
+              format: 'image/png',
+              layers: 'NOAA_DHW:CRW_BAA_7D_MAX',
+              transparent: true,
+              version: '1.3.0'}),
+            "CRW_DHW": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              attribution: 'NOAA Coral Reef Watch (CRW)',
+              format: 'image/png',
+              layers: 'NOAA_DHW:CRW_DHW',
+              transparent: true,
+              version: '1.3.0'}),
+            "CRW_HOTSPOT": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              attribution: 'NOAA Coral Reef Watch (CRW)',
+              format: 'image/png',
+              layers: 'NOAA_DHW:CRW_HOTSPOT',
+              transparent: true,
+              version: '1.3.0'}),
+            "CRW_SST": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              attribution: 'NOAA Coral Reef Watch (CRW)',
+              format: 'image/png',
+              layers: 'NOAA_DHW:CRW_SST',
+              transparent: true,
+              version: '1.3.0'}),
+            "CRW_SSTANOMALY": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              attribution: 'NOAA Coral Reef Watch (CRW)',
+              format: 'image/png',
+              layers: 'NOAA_DHW:CRW_SSTANOMALY',
+              transparent: true,
+              version: '1.3.0'})
+        };
 
-      var overlays = {
-        Land: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'Land',
-          styles: '',
-          transparent: true,
-          version: '1.3.0'}),
-        Coastlines: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'Coastlines',
-          styles: '',
-          transparent: true,
-          version: '1.3.0'}),
-        LakesAndRivers: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'LakesAndRivers',
-          styles: '',
-          transparent: true,
-          version: '1.3.0'}),
-        Nations: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'Nations',
-          styles: '',
-          transparent: true,
-          version: '1.3.0'}),
-        States: L.tileLayer.wms(
-          'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
-          bgcolor: '0x808080',
-          crs: L.CRS.EPSG4326,
-          format: 'image/png',
-          layers: 'States',
-          styles: '',
-          transparent: true,
-          version: '1.3.0'})
-      };
-
-
+        var overlays = {
+            "Land": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              format: 'image/png',
+              layers: 'Land',
+              transparent: true,
+              version: '1.3.0'}),
+            "Coastlines": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              format: 'image/png',
+              layers: 'Coastlines',
+              transparent: true,
+              version: '1.3.0'}),
+            "LakesAndRivers": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              format: 'image/png',
+              layers: 'LakesAndRivers',
+              transparent: true,
+              version: '1.3.0'}),
+            "Nations": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              format: 'image/png',
+              layers: 'Nations',
+              transparent: true,
+              version: '1.3.0'}),
+            "States": L.tileLayer.wms(
+              'https://coastwatch.pfeg.noaa.gov/erddap/wms/NOAA_DHW/request?', {
+              format: 'image/png',
+              layers: 'States',
+              transparent: true,
+              version: '1.3.0'})
+        };
 
         L.control.layers(basemaps, overlays, {}).addTo(map);
 
